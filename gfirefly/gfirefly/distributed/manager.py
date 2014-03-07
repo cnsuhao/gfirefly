@@ -25,7 +25,7 @@ class ChildsManager(object):
         return None
         
     def addChild(self,child):
-        '''添加一个child节点
+        '''添加一个child节点\n
         @param child: Child object
         '''
         key = child._id
@@ -34,7 +34,7 @@ class ChildsManager(object):
         self._childs[key] = child
         
     def dropChild(self,child):
-        '''删除一个child 节点
+        '''删除一个child 节点\n
         @param child: Child Object 
         '''
         key = child._id
@@ -44,7 +44,7 @@ class ChildsManager(object):
             log.msg(str(e))
             
     def dropChildByID(self,childId):
-        '''删除一个child 节点
+        '''删除一个child 节点\n
         @param childId: Child ID 
         '''
         try:
@@ -53,7 +53,7 @@ class ChildsManager(object):
             log.msg(str(e))
             
     def callChild(self,childId,*args,**kw):
-        '''调用子节点的接口
+        '''调用子节点的接口\n
         @param childId: int 子节点的id
         '''
         child = self._childs.get(childId,None)
@@ -63,7 +63,7 @@ class ChildsManager(object):
         return child.callbackChild(*args,**kw)
     
     def callChildNotForResult(self,childId,*args,**kw):
-        '''调用子节点的接口
+        '''调用子节点的接口\n
         @param childId: int 子节点的id
         '''
         child = self._childs.get(childId,None)
@@ -73,7 +73,7 @@ class ChildsManager(object):
         child.callbackChildNotForResult(*args,**kw)
     
     def callChildByName(self,childname,*args,**kw):
-        '''调用子节点的接口
+        '''调用子节点的接口\n
         @param childname: str 子节点的名称
         '''
         child = self.getChildByName(childname)
@@ -83,7 +83,7 @@ class ChildsManager(object):
         return child.callbackChild(*args,**kw)
     
     def callChildByNameNotForResult(self,childname,*args,**kw):
-        '''调用子节点的接口
+        '''调用子节点的接口\n
         @param childId: int 子节点的id
         '''
         child = self.getChildByName(childname)

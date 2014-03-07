@@ -35,7 +35,7 @@ class PKValueError(ValueError):
         return "new record has no 'PK': %s" % (self.data)
 
 class MMode(MemObject):
-    """内存数据模型
+    """内存数据模型，最终对应到的是表中的一条记录
     """
     def __init__(self, name,pk,data={}):
         """
@@ -131,13 +131,15 @@ class MMode(MemObject):
         
         
 class MFKMode(MemObject):
-    """内存数据模型
+    """外键内存数据模型
     """
     def __init__(self, name,pklist = []):
         MemObject.__init__(self, name, mclient)
         self.pklist = pklist
         
 class MAdmin(MemObject):
+    """MMode对象管理，同一个MAdmin管理同一类的MMode，对应的是数据库中的某一种表
+    """
     
     def __init__(self, name,pk,timeout=TIMEOUT,**kw):
         MemObject.__init__(self, name, mclient)
@@ -148,6 +150,8 @@ class MAdmin(MemObject):
         self._timeout = timeout
         
     def insert(self):
+        """将MAdmin配置的信息写入memcached中保存。\n当在其他的进程中实例化相同的配置的MAdmin，可以使得数据同步。
+        """
         if self._incrkey and not self.get("_incrvalue"):
             self._incrvalue = util.GetTableIncrValue(self._name)
         MemObject.insert(self)
@@ -164,6 +168,8 @@ class MAdmin(MemObject):
     
     @property
     def madmininfo(self):
+        """作为一个特性属性。可以获取这个madmin的相关信息
+        """
         keys = self.__dict__.keys()
         info = self.get_multi(keys)
         return info
@@ -184,7 +190,8 @@ class MAdmin(MemObject):
         return dbkeylist
         
     def getObj(self,pk):
-        '''
+        '''根据主键，可以获得mmode对象的实例.\n
+        >>> m = madmin.getObj(1)
         '''
         mm = MMode(self._name+':%s'%pk,self._pk)
         if not mm.IsEffective():
@@ -200,7 +207,8 @@ class MAdmin(MemObject):
         return mm
     
     def getObjData(self,pk):
-        '''
+        '''根据主键，可以获得mmode对象的实例的数据.\n
+        >>> m = madmin.getObjData(1)
         '''
         mm = MMode(self._name+':%s'%pk,self._pk)
         if not mm.IsEffective():
@@ -218,7 +226,8 @@ class MAdmin(MemObject):
         
     
     def getObjList(self,pklist):
-        '''
+        '''根据主键列表获取mmode对象的列表.\n
+        >>> m = madmin.getObjList([1,2,3,4,5])
         '''
         _pklist = []
         objlist = []
@@ -240,7 +249,8 @@ class MAdmin(MemObject):
         return objlist
     
     def deleteMode(self,pk):
-        '''
+        '''根据主键删除内存中的某条记录信息，\n这里只是修改内存中的记录状态_state为删除状态.\n
+        >>> m = madmin.deleteMode(1)
         '''
         mm = self.getObj(pk)
         if mm:
@@ -258,6 +268,9 @@ class MAdmin(MemObject):
         return True
     
     def checkAll(self):
+        """同步内存中的数据到对应的数据表中。\n
+        >>> m = madmin.checkAll()
+        """
         key = '%s:%s:'%(mclient._hostname,self._name)
         _pklist = util.getallkeys(key, mclient.connection)
         for pk in _pklist:

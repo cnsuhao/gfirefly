@@ -20,6 +20,8 @@ import os,sys,affinity
 reactor = reactor
 
 def serverStop():
+    """停止服务进程
+    """
     log.msg('stop')
     if GlobalObject().stophandler:
         GlobalObject().stophandler()
@@ -27,6 +29,8 @@ def serverStop():
     return True
 
 class FFServer:
+    """抽象出的一个服务进程
+    """
     
     def __init__(self):
         '''
@@ -108,12 +112,13 @@ class FFServer:
         if app:
             __import__(app)
         if mreload:
-            GlobalObject().reloadmodule = __import__(mreload)
+            _path_list = mreload.split(".")
+            GlobalObject().reloadmodule = __import__(mreload,fromlist=_path_list[:1])
         GlobalObject().remote_connect = self.remote_connect
         import admin
         
     def remote_connect(self, rname, rhost):
-        """
+        """进行rpc的连接
         """
         for cnf in self.remoteportlist:
             _rname = cnf.get('rootname')

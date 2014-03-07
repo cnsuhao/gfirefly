@@ -7,13 +7,18 @@ memcached client
 import memcache
 
 class MemConnError(Exception): 
+    """memcached 连接错误
     """
-    """
+    
     def __str__(self):
         return "memcache connect error"
 
 class MemClient:
-    '''memcached
+    '''memcached 连接类，对通过它存储到memcached中的key，定义了新的key的生成规则，避免key的冲突。\n
+    @param _hostname: str 这个连接的命名空间。新生成的key的规则会是  _hostname:key。\n
+    @param _urls: []list memcached的连接的配置\n
+    @param connection: memcached的连接实例。\n
+    >>> mclient = MemClient()
     '''
     
     def __init__(self,timeout = 0):
@@ -24,7 +29,9 @@ class MemClient:
         self.connection = None
         
     def connect(self,urls,hostname):
-        '''memcached connect
+        '''memcached 建立连接，配置连接信息
+
+        >>> mclient.connect(['127.0.0.1:11211'], "test")
         '''
         self._hostname = hostname
         self._urls = urls
@@ -33,7 +40,10 @@ class MemClient:
             raise MemConnError()
         
     def produceKey(self,keyname):
-        '''
+        '''重新生成新的key，规则是 _hostname:key
+
+        >>> mclient.produceKey('name')
+        test:name
         '''
         if isinstance(keyname, basestring):
             return ''.join([self._hostname,':',keyname])

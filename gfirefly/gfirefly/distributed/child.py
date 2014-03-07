@@ -23,20 +23,20 @@ class Child(object):
         self._transport = transport
         
     def callbackChild(self,*args,**kw):
-        '''回调子节点的接口
+        '''回调子节点的接口\n
         return a Defered Object (recvdata)
         '''
         return self.callbackChildForResult(*args,**kw)
     
     def callbackChildNotForResult(self,*args,**kw):
-        '''回调子节点的接口
+        '''回调子节点的接口\n
         return a Defered Object (recvdata)
         '''
         remote = self._transport.getRootObject()
         remote.callRemoteNotForResult('callChild',*args,**kw)
         
     def callbackChildForResult(self,*args,**kw):
-        '''回调子节点的接口
+        '''回调子节点的接口\n
         return a Defered Object (recvdata)
         '''
         remote = self._transport.getRootObject()

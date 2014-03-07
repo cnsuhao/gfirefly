@@ -13,7 +13,7 @@ reactor = reactor
 
 @masterserviceHandle
 def serverStop():
-    """
+    """供master调用的接口：关闭服务器
     """
     log.msg('stop')
     if GlobalObject().stophandler:
@@ -23,7 +23,7 @@ def serverStop():
 
 @masterserviceHandle
 def sreload():
-    """
+    """供master调用的接口：热更新模块
     """
     log.msg('reload')
     if GlobalObject().reloadmodule:
@@ -32,7 +32,7 @@ def sreload():
 
 @masterserviceHandle
 def remote_connect(rname, rhost):
-    """
+    """供master调用的接口：进行远程的rpc连接
     """
     GlobalObject().remote_connect(rname, rhost)
 
