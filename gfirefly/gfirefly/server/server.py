@@ -63,13 +63,6 @@ class FFServer:
         cpuid = config.get('cpu')#绑定cpu
         mreload = config.get('reload')#重新加载模块名称
         self.servername = servername
-        if masterconf:
-            masterport = masterconf.get('rootport')
-            masterhost = masterconf.get('roothost')
-            self.master_remote = RemoteObject(servername)
-            addr = ('localhost',masterport) if not masterhost else (masterhost,masterport)
-            self.master_remote.connect(addr)
-            GlobalObject().masterremote = self.master_remote
             
         if netport:
             self.netfactory = LiberateFactory()
@@ -116,6 +109,14 @@ class FFServer:
             GlobalObject().reloadmodule = __import__(mreload,fromlist=_path_list[:1])
         GlobalObject().remote_connect = self.remote_connect
         import admin
+        
+        if masterconf:
+            masterport = masterconf.get('rootport')
+            masterhost = masterconf.get('roothost')
+            self.master_remote = RemoteObject(servername)
+            addr = ('localhost',masterport) if not masterhost else (masterhost,masterport)
+            self.master_remote.connect(addr)
+            GlobalObject().masterremote = self.master_remote
         
     def remote_connect(self, rname, rhost):
         """进行rpc的连接
