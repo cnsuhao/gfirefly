@@ -71,9 +71,9 @@ class FFServer:
             reactor.listenTCP(netport,self.netfactory)
             
         if webport:
-            self.webroot = Flask("master")
+            self.webroot = Flask("servername")
             GlobalObject().webroot = self.webroot
-            reactor.listenTCP(webport, self.webroot)
+            reactor.listenWSGI(webport, self.webroot)
             
         if rootport:
             self.root = PBRoot()
@@ -102,13 +102,6 @@ class FFServer:
             affinity.set_process_affinity_mask(os.getpid(), cpuid)
         GlobalObject().config(netfactory = self.netfactory, root=self.root,
                     remote = self.remote)
-        if app:
-            __import__(app)
-        if mreload:
-            _path_list = mreload.split(".")
-            GlobalObject().reloadmodule = __import__(mreload,fromlist=_path_list[:1])
-        GlobalObject().remote_connect = self.remote_connect
-        import admin
         
         if masterconf:
             masterport = masterconf.get('rootport')
@@ -117,6 +110,14 @@ class FFServer:
             addr = ('localhost',masterport) if not masterhost else (masterhost,masterport)
             self.master_remote.connect(addr)
             GlobalObject().masterremote = self.master_remote
+        import admin
+        
+        if app:
+            __import__(app)
+        if mreload:
+            _path_list = mreload.split(".")
+            GlobalObject().reloadmodule = __import__(mreload,fromlist=_path_list[:1])
+        GlobalObject().remote_connect = self.remote_connect
         
     def remote_connect(self, rname, rhost):
         """进行rpc的连接
@@ -135,8 +136,8 @@ class FFServer:
     def start(self):
         '''启动服务器
         '''
-        log.msg('%s start...'%self.servername)
-        log.msg('%s pid: %s'%(self.servername,os.getpid()))
+        log.msg('[%s] started...'%self.servername)
+        log.msg('[%s] pid: %s'%(self.servername,os.getpid()))
         reactor.run()
         
         
